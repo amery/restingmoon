@@ -1,7 +1,5 @@
--- Copyright (C) 2009 Micrologic Associates, <http://www.micrologic.net>
---
-
 require "restingmoon.debug"
+require "restingmoon.static"
 
 module(..., package.seeall)
 
@@ -21,6 +19,13 @@ function hello_world(wsapi_env)
 end
 
 local function run(app, wsapi_env)
+	if (app.overlay) then
+		local status, header, body = restingmoon.static.wsapi_handler(app, wsapi_env)
+
+		if (status) then
+			return status, header, body
+		end
+	end
 	return app.app_run(wsapi_env)
 end
 
@@ -35,4 +40,8 @@ function new(app)
 	-- callback to the real app
 	--
 	app.app_run = hello_world
+
+	-- directory for overwriting what is served by the app
+	--
+	app.overlay = "public"
 end
