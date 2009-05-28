@@ -41,27 +41,25 @@ function table.show(t, name, indent)
 
 		if type(value) ~= "table" then
 			cart = cart .. " = " .. basicSerialize(value) .. ";\n"
+		elseif saved[value] then
+			cart = cart .. " = {}; -- " .. saved[value] ..
+				" (self reference)\n"
+			autoref = autoref ..  name .. " = " .. saved[value] ..
+				";\n"
 		else
-			if saved[value] then
-				cart = cart .. " = {}; -- " .. saved[value] ..
-					" (self reference)\n"
-				autoref = autoref ..  name .. " = " .. saved[value] ..
-					";\n"
+			saved[value] = name
+			if isemptytable(value) then
+				cart = cart .. " = {};\n"
 			else
-				saved[value] = name
-				if isemptytable(value) then
-					cart = cart .. " = {};\n"
-				else
-					cart = cart .. " = {\n"
-					for k, v in pairs(value) do
-						k = basicSerialize(k)
-						local fname = string.format("%s[%s]", name, k)
-						field = string.format("[%s]", k)
-						-- three spaces between levels
-							addtocart(v, fname, indent .. "   ", saved, field)
-					end
-					cart = cart .. indent .. "};\n"
+				cart = cart .. " = {\n"
+				for k, v in pairs(value) do
+					k = basicSerialize(k)
+					local fname = string.format("%s[%s]", name, k)
+					field = string.format("[%s]", k)
+					-- three spaces between levels
+						addtocart(v, fname, indent .. "   ", saved, field)
 				end
+				cart = cart .. indent .. "};\n"
 			end
 		end
 	end
