@@ -20,19 +20,19 @@ function hello_world(wsapi_env)
 	return 200, headers, coroutine.wrap(hello_text)
 end
 
-local function run(app_module, wsapi_env)
-	return app_module.app_run(wsapi_env)
+local function run(app, wsapi_env)
+	return app.app_run(wsapi_env)
 end
 
-function new(app_module)
+function new(app)
 
 	-- wsapi hook
 	--
-	app_module.run = function (wsapi_env)
-		return run(app_module, wsapi_env)
+	app.run = function (wsapi_env)
+		return run(app, wsapi_env)
 	end
 
 	-- callback to the real app
 	--
-	app_module.app_run = hello_world
+	app.app_run = hello_world
 end
