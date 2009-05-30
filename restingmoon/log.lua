@@ -1,10 +1,10 @@
 require "restingmoon"
 
 local function resource(req)
-	if req.wsapi_env.QUERY_STRING and req.wsapi_env.QUERY_STRING ~= "" then
-		return req.wsapi_env.PATH_INFO .. "?" .. req.wsapi_env.QUERY_STRING
+	if req.QUERY_STRING and req.QUERY_STRING ~= "" then
+		return req.PATH_INFO .. "?" .. req.QUERY_STRING
 	else
-		return req.wsapi_env.PATH_INFO
+		return req.PATH_INFO
 	end
 end
 
@@ -14,10 +14,10 @@ function restingmoon.log_request(req)
 	-- "%h %l %u %t \"%r\" %>s %b"
 	local fmt='%s - - %s "%s %s %s" - -'
 	print(string.format(fmt,
-		req.wsapi_env.REMOTE_ADDR,
+		req.REMOTE_ADDR,
 		os.date("[%F %T %z]"),
-		req.wsapi_env.REQUEST_METHOD,
+		req.REQUEST_METHOD,
 		resource(req),
-		req.wsapi_env.SERVER_PROTOCOL
+		req.SERVER_PROTOCOL
 		))
 end
