@@ -13,12 +13,12 @@ local function sender(filename, size)
 	end
 end
 
-function wsapi_dispatch_file(filename, attr)
-	local size = attr.size < attr.blksize and attr.size or attr.blksize
-	local headers = {}
+function wsapi_dispatch_file(req, filename, attr)
+	local headers = {
+		["Content-Type"] = m.mime_by_filename(filename),
+		["Content-Length"] = attr.size
+	}
 
-	headers["Content-Type"] = m.mime_by_filename(filename)
-	headers["Content-Length"] = attr.size
 	if attr.modification ~= nil then
 		headers["Last-Modified"] = h.timestamp(attr.modification)
 	end
@@ -26,5 +26,5 @@ function wsapi_dispatch_file(filename, attr)
 	-- TODO: handle different request methods
 	-- TODO: handle If-modified-since returning 304
 	-- FIXME: what if it's empty?
-	return 200, headers, sender(filename, size)
+	return 200, headers, sender(filename)
 end

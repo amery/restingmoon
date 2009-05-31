@@ -1,4 +1,3 @@
-require "restingmoon.debug"
 require "restingmoon.log"
 
 require "restingmoon.request"
@@ -44,7 +43,7 @@ local function run(app, wsapi_env)
 			-- NOP
 		elseif attr.mode == "file" then
 			-- sweet, let's serve it immediately
-			status, header, body = restingmoon.static.wsapi_dispatch_file(filename, attr)
+			status, header, body = restingmoon.static.wsapi_dispatch_file(req, filename, attr)
 		--[[
 		elseif attr.mode == "directory" then
 			print("DIR:", filename)
