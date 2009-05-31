@@ -22,12 +22,11 @@ function load_mimetypes(file)
 			for ext in data:gmatch("([^%s]+)") do
 				if mime_ext_table[ext] and mimetype ~= mime_ext_table[ext] then
 					io.stderr:write(string.format(
-						"ERROR: MIME: %s (%s) conflicting type (%s)\n",
-						ext, mime_ext_table[ext], mimetype))
-				else
-					mime_ext_table[ext] = mimetype
+						"WARNING: MIME: %s: %s overwrites %s.\n",
+						ext, mimetype, mime_ext_table[ext]))
 				end
 
+				mime_ext_table[ext] = mimetype
 				t[#t + 1] = ext
 			end
 		end
