@@ -25,7 +25,7 @@ function hello_world(req)
 end
 
 local function run(app, wsapi_env)
-	local req = restingmoon.request.new(wsapi_env)
+	local req = restingmoon.request.new(app, wsapi_env)
 	local status, header, body
 
 	restingmoon.log_response(req)

@@ -2,7 +2,7 @@ module(..., package.seeall)
 
 require "wsapi.request"
 
-function new(wsapi_env)
+function new(app, wsapi_env)
 
 	-- references to wsapi stuff
 	--
@@ -21,6 +21,7 @@ function new(wsapi_env)
 
 	req.document_root = wsapi_env.DOCUMENT_ROOT
 	req.app_root = wsapi_env.APP_PATH
+	req.app = app
 
 	return req
 end
