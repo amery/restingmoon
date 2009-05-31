@@ -1,23 +1,27 @@
 require "restingmoon"
 
 local function resource(req)
-	if req.QUERY_STRING and req.QUERY_STRING ~= "" then
-		return req.PATH_INFO .. "?" .. req.QUERY_STRING
+	local qs = req.wsapi_env.QUERY_STRING or ""
+
+	if qs ~= "" then
+		return req.path_info .. "?" .. qs
 	else
-		return req.PATH_INFO
+		return req.path_info
 	end
 end
 
-function restingmoon.log_request(req)
+function restingmoon.log_response(req, status, length)
 	-- trying to mimic Apache common format
 	-- http://httpd.apache.org/docs/1.3/logs.html#common
 	-- "%h %l %u %t \"%r\" %>s %b"
-	local fmt='%s - - %s "%s %s %s" - -'
+	local fmt='%s - - %s "%s %s %s" %s %s'
 	print(string.format(fmt,
-		req.REMOTE_ADDR,
+		req.wsapi_env.REMOTE_ADDR,
 		os.date("[%F %T %z]"),
-		req.REQUEST_METHOD,
+		req.wsapi_env.REQUEST_METHOD,
 		resource(req),
-		req.SERVER_PROTOCOL
+		req.wsapi_env.SERVER_PROTOCOL,
+		status ~= nil and status or "-",
+		length ~= nil and length or "-"
 		))
 end
