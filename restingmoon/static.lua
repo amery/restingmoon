@@ -1,25 +1,6 @@
+local m = require "restingmoon.mime"
+
 module(..., package.seeall)
-
-require "lfs"
-
-local types = {
-	ico = "image/x-icon",
-	gif = "image/gif",
-	jpg = "image/jpeg",
-	txt = "text/plain",
-	}
-
-local function content_type(path)
-	local ext = path:match("%.([^.]+)$")
-	return types[ext]
-end
-
-local function make_header(filename)
-	return {
-		["Content-Type"] = content_type(filename),
-		["Content-Length"] = lfs.attributes(filename, "size")
-		}
-end
 
 local function sender(filename, size)
 	size = size or 4096
@@ -31,23 +12,22 @@ local function sender(filename, size)
 	end
 end
 
-local function dispatch_file(app, env, filename)
-	return 200, make_header(filename), sender(filename)
-end
-
-function wsapi_handler(app, env)
-	local filename = env.APP_PATH .. "/" .. app.overlay .. env.PATH_INFO
-	local mode = lfs.attributes(filename, "mode")
-
-	if (mode == "directory") then
-		-- TODO: consider Accept: header
-		filename = filename .. "/index.html"
-		mode = lfs.attributes(filename, "mode")
+function wsapi_dispatch_file(filename, attr)
+	local headers = {}
+	local ext, mime
+	local size = attr.blksize
+	if size > attr.size then
+		size = attr.size
 	end
 
-	if (mode == "file") then
-		return dispatch_file(app, env, filename)
-	else
-		return nil
+	mime = m.mime_by_filename(filename)
+
+	-- attr.modification
+	headers["Content-Type"] = mime
+	headers["Content-Length"] = attr.size
+	if attr.modification ~= nil then
+		headers["Last-Modified"] = os.date("!%A %d-%b-%y %T %Z", attr.modification)
 	end
+
+	return 200, headers, sender(filename, size)
 end
