@@ -9,10 +9,9 @@ function load_mimetypes(file)
 	local line
 	for line in io.lines(file) do
 		local mimetype, data = line:match("^([^#][^%s]+)%s+(.*)%s*$")
-		local t = {}
 
 		if mimetype then
-			local ext
+			local ext t = {}
 
 			if mime_table[mimetype] then
 				t = mime_table[mimetype]
@@ -42,3 +41,13 @@ load_mimetypes("/etc/mime.types")
 
 -- print(table.show(mime_table,"mime_table"))
 -- print(table.show(mime_ext_table,"mime_ext_table"))
+
+function mime_by_ext(ext)
+	local mime = restingmoon.mime.mime_ext_table[ext]
+
+	return mime ~= nil and mime or "application/octet-stream"
+end
+
+function mime_by_filename(filename)
+	return mime_by_ext(filename:match("[^./]%.([^./]+)$"))
+end
