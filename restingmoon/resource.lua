@@ -123,6 +123,7 @@ function find_handler(resources, req)
 				end
 			else
 				handler = handler404
+				args.not_found = true
 				break
 			end
 		end
