@@ -1,5 +1,3 @@
-require "restingmoon.debug"
-
 module(..., package.seeall)
 
 mime_table = {}
