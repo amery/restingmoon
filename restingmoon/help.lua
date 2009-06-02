@@ -1,10 +1,25 @@
--- vim:set ft=lua:
+local lfs = require "lfs"
+
+-- io.read_file() reads the entire content
+-- of a file at once
 --
+function io.read_file(filename)
+	local size = lfs.attributes(filename,"size")
+
+	if size == nil then
+		return nil
+	elseif size > 0 then
+		local f = io.open(filename)
+		local data = f:read(size)
+		f:close()
+		return data
+	end
+	return ""
+end
 
 -- table.show() stolen from
 -- http://lua-users.org/wiki/TableSerialization
 --
-
 function table.show(t, name, indent)
 	local cart	-- a container
 	local autoref	-- for self references
@@ -19,7 +34,7 @@ function table.show(t, name, indent)
 			-- info.name is nil because o is not a calling level
 			if info.what == "C" then
 				return string.format("%q", so .. ", C function")
-			else 
+			else
 				-- the information is defined through lines
 				return string.format("%q", so .. ", defined in (" ..
 					info.linedefined .. "-" .. info.lastlinedefined ..
