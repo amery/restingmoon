@@ -84,3 +84,49 @@ function tree(handler)
 	return root
 end
 
+function find_handler(resources, req)
+	local args = {}
+	local handler, handler404
+
+	if resources then
+		local p = resources
+
+		-- the root
+		handler = p.handler
+		handler404 = p.handler404
+
+		-- for each element of the path
+		for i, t in ipairs(req.path) do
+			local found = false
+
+			-- look for the right handler
+			for j, v in ipairs(p.children) do
+				if v.type == "literal" and v.name == t then
+					p, found = v, true
+					break
+				elseif v.type == "numeric" then
+					local n = tonumber(t)
+					if n then
+						p, found = v, true
+						args[v.name] = n
+						break
+					end
+				end
+			end
+
+			if found then
+				if p.handler then
+					handler = p.handler
+				end
+				if p.handler404 then
+					handler404 = p.handler404
+				end
+			else
+				handler = handler404
+				break
+			end
+		end
+	end
+
+	return handler, args
+end
