@@ -4,6 +4,9 @@ require "restingmoon.request"
 
 require "restingmoon.static"
 
+local h = require "restingmoon.http"
+local r = require "restingmoon.resource"
+
 require "lfs"
 
 module(..., package.seeall)
@@ -29,8 +32,6 @@ local function run(app, wsapi_env)
 
 	restingmoon.log_response(req)
 
-	--local res = restingmoon.static.wsapi_handler(req)
-
 	if req.document_root ~= "" then
 		local filename, attr
 
@@ -44,20 +45,33 @@ local function run(app, wsapi_env)
 		elseif attr.mode == "file" then
 			-- sweet, let's serve it immediately
 			status, header, body = restingmoon.static.wsapi_dispatch_file(req, filename, attr)
-		--[[
 		elseif attr.mode == "directory" then
-			print("DIR:", filename)
-			]]--
+			-- TODO: find possible ${path}.* and ${path}/index.*
+			if req.path_info:sub(-1,-1) ~= "/" then
+				-- use canonical
+				status, header, body = h.send_301(req.path_info .. "/")
+			end
 		else
-			print(table.show(attr, filename))
+			io.stderr(table.show(attr, filename))
 		end
 	end
 
 	if status == nil then
-		status, header, body = app.app_run(req)
+		-- pick a resource handler
+		local handler, args = r.find_handler(app.resources, req)
+
+		if handler then
+			-- NOP
+		elseif app.default_handler then
+			handler = app.default_handler
+		else
+			handler = hello_world
+		end
+
+		status, header, body = handler(req, args)
 	end
 
-	restingmoon.log_response(req, status, header["Content-Length"])
+	restingmoon.log_response(req, status, header and header["Content-Length"])
 
 	return status, header, body
 end
@@ -66,11 +80,7 @@ function new(app)
 
 	-- wsapi hook
 	--
-	app.run = function (wsapi_env)
+	app.run = function(wsapi_env)
 		return run(app, wsapi_env)
 	end
-
-	-- callback to the real app
-	--
-	app.app_run = hello_world
 end
