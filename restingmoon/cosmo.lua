@@ -1,17 +1,16 @@
+require "restingmoon.help"
+
 require "cosmo"
 require "lfs"
 
 function cosmo.fill_file(filename, values)
-	local size = lfs.attributes(filename,"size")
-	local f = io.open(filename)
-	local template
+	local template = io.read_file(filename)
 
-	if f == nil then
-		return "failed to open " .. filename
+	if template == nil then
+		return "-- failed to read "..filename.." --"
+	elseif template == "" then
+		return ""
+	else
+		return cosmo.fill(template, values)
 	end
-
-	template = f:read(size)
-	f:close()
-
-	return cosmo.fill(template, values)
 end
