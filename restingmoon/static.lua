@@ -23,8 +23,15 @@ function wsapi_dispatch_file(req, filename, attr)
 		headers["Last-Modified"] = h.timestamp(attr.modification)
 	end
 
-	-- TODO: handle different request methods
-	-- TODO: handle If-modified-since returning 304
-	-- FIXME: what if it's empty?
-	return 200, headers, sender(filename)
+	if req.method == "HEAD" then
+		return h.send_200_head(headers)
+	elseif req.method ~= "GET" then
+		return h.send_405()
+	elseif req.wsapi_env.HTTP_IF_MODIFIED_SINCE == headers["Last-Modified"] then
+		return h.send_304(headers)
+	elseif attr.size == 0 then
+		return h.send_204(headers)
+	else
+		return 200, headers, sender(filename)
+	end
 end
