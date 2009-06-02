@@ -39,11 +39,12 @@ end
 
 -- new literal node, always exactly the same value
 --
-local function literal(tree, name, handler)
+local function literal(tree, name, handler, handler404)
 	local node = {
 		["name"] = name,
 		["type"] = "literal",
 		["handler"] = handler,
+		["handler404"] = handler404,
 		["children"] = {},
 		["parent"] = tree.current,
 	}
@@ -54,11 +55,12 @@ end
 
 -- new numeric variable node
 --
-local function numeric(tree, name, handler)
+local function numeric(tree, name, handler, handler404)
 	local node = {
 		["name"] = name,
 		["type"] = "numeric",
 		["handler"] = handler,
+		["handler404"] = handler404,
 		["children"] = {},
 		["parent"] = tree.current,
 	}
