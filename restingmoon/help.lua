@@ -17,6 +17,19 @@ function io.read_file(filename)
 	return ""
 end
 
+-- string.split(s, d)
+-- splits an string using a delimiter
+
+function string.split(s, d)
+	local t = {}
+	d = "([^"..d.."]+)"
+
+	for v in string.gmatch(s, d) do
+		t[#t+1] = v
+	end
+	return t
+end
+
 -- table.show() stolen from
 -- http://lua-users.org/wiki/TableSerialization
 --
