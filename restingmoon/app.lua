@@ -5,6 +5,7 @@ require "restingmoon.request"
 require "restingmoon.static"
 
 local h = require "restingmoon.http"
+local m = require "restingmoon.mime"
 local r = require "restingmoon.resource"
 
 require "lfs"
@@ -59,6 +60,14 @@ local function run(app, wsapi_env)
 	if status == nil then
 		-- pick a resource handler
 		local handler, args = r.find_handler(app.resources, req)
+		local accepted
+
+		-- wanted mime types
+		if req.path_ext then
+			accepted = {m.parse_media_range(m.mime_by_ext(req.path_ext))}
+		else
+			accepted = m.parse_media_ranges(req.wsapi_env.HTTP_ACCEPT)
+		end
 
 		if handler then
 			-- NOP
@@ -68,7 +77,7 @@ local function run(app, wsapi_env)
 			handler = hello_world
 		end
 
-		status, header, body = handler(req, args)
+		status, header, body = handler(req, args, accepted)
 	end
 
 	restingmoon.log_response(req, status, header and header["Content-Length"])
