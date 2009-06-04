@@ -53,6 +53,8 @@ function table.show(t, name, indent)
 					info.linedefined .. "-" .. info.lastlinedefined ..
 					")" .. info.source)
 			end
+		elseif type(o) == "boolean" then
+			return o and "true" or "false"
 		elseif type(o) == "number" then
 			return so
 		else
