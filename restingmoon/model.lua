@@ -1,38 +1,52 @@
-local error = error
-local type = type
-local print = print
+local error, print = error, print
+local type, math = type, math
+local getmetatable, rawset = getmetatable, rawset
+local tonumber, tostring = tonumber, tostring
 
 module(...)
 
 function new_model()
-	return { fields={} }
+	return {
+		__fields={},
+		__index=get_field,
+		__newindex=set_field,
+	}
 end
 
 local function new_field(mt, name, validator)
 	if type(name) ~= "string" or #name == 0 then
 		error("invalid field name.", 3)
-	elseif mt.fields[name] then
+	elseif mt.__fields[name] then
 		error("duplicated field name.", 3)
 	elseif type(validator) ~= "function" then
 		error("no validator given.", 2)
 	else
-		mt.fields[name] = {validator=validator}
+		mt.__fields[name] = {validator=validator}
 	end
-	return mt.fields[name]
+	return mt.__fields[name]
 end
 
-local function validate_integer(f, v)
-	if type(v) == "string" then
-		v = tonumber(v)
-	end
-
-	if type(v) ~= "number" or math.floor(v) ~= v then
-		v = f.default
+function set_field(t, name, value)
+	local mt = getmetatable(t)
+	local f = mt.__fields[name]
+	if f then
+		local v = f.validator(f, value)
+		rawset(t, name, v)
 	else
-		v = validate_decimal(f, v)
+		error("object doesn't include such field", 2)
 	end
+end
 
-	return v
+function get_field(t, name)
+	local mt = getmetatable(t)
+	local f = mt.__fields[name]
+	if f then
+		local v = f.validator(f, value)
+		rawset(t, name, v)
+		return v
+	else
+		error("object doesn't include such field", 2)
+	end
 end
 
 local function validate_decimal(f, v)
@@ -52,6 +66,20 @@ local function validate_decimal(f, v)
 	end
 
 	return f.default
+end
+
+local function validate_integer(f, v)
+	if type(v) == "string" then
+		v = tonumber(v)
+	end
+
+	if type(v) ~= "number" or math.floor(v) ~= v then
+		v = f.default
+	else
+		v = validate_decimal(f, v)
+	end
+
+	return v
 end
 
 local boolean_strings = {
