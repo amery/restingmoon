@@ -8,17 +8,17 @@ function new_model()
 	return { fields={} }
 end
 
-local function new_field(t, name, validator)
+local function new_field(mt, name, validator)
 	if type(name) ~= "string" or #name == 0 then
 		error("invalid field name.", 3)
-	elseif t.fields[name] then
+	elseif mt.fields[name] then
 		error("duplicated field name.", 3)
 	elseif type(validator) ~= "function" then
 		error("no validator given.", 2)
 	else
-		t.fields[name] = {validator=validator}
+		mt.fields[name] = {validator=validator}
 	end
-	return t.fields[name]
+	return mt.fields[name]
 end
 
 local function validate_integer(f, v)
@@ -95,36 +95,35 @@ local function validate_enum(f, v)
 	end
 end
 
-function add_integer_field(t, name, default, min, max)
-	local f = new_field(t, name, validate_integer)
+function add_integer_field(mt, name, default, min, max)
+	local f = new_field(mt, name, validate_integer)
 
 	f.default = default
 	f.min = min
 	f.max = max
 end
 
-function add_decimal_field(t, name, default, min, max)
-	local f = new_field(t, name, validate_decimal)
+function add_decimal_field(mt, name, default, min, max)
+	local f = new_field(mt, name, validate_decimal)
 
 	f.default = default
 	f.min = min
 	f.max = max
 end
 
-function add_text_field(t, name)
-	new_field(t, name, validate_string)
+function add_text_field(mt, name)
+	new_field(mt, name, validate_string)
 end
 
-function add_boolean_field(t, name, default)
-	local f = new_field(t, name, validate_boolean)
+function add_boolean_field(mt, name, default)
+	local f = new_field(mt, name, validate_boolean)
 
 	f.default = default
 end
 
-function add_enum_field(t, name, enum, default)
-	local f = new_field(t, name, validate_enum)
+function add_enum_field(mt, name, enum, default)
+	local f = new_field(mt, name, validate_enum)
 
 	f.default = default
 	f.enum = enum
 end
-
