@@ -14,3 +14,9 @@ function cosmo.fill_file(filename, values)
 		return cosmo.fill(template, values)
 	end
 end
+
+function cosmo.f_file(filename)
+	local template = io.read_file(filename)
+
+	return cosmo.f(template)
+end
