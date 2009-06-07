@@ -7,17 +7,30 @@ module(...)
 
 function new_model()
 	return {
+		__properties={},
 		__fields={},
 		__index=get_field,
 		__newindex=set_field,
 	}
 end
 
+function add_property(mt, name, callback)
+	if type(name) ~= "string" or #name == 0 then
+		error("invalid property name.", 3)
+	elseif mt.__properties[name] or mt.__fields[name] then
+		error("duplicated property/field name.", 3)
+	elseif type(callback) ~= "function" then
+		error("invalid callback", 2)
+	else
+		mt.__properties[name] = callback
+	end
+end
+
 local function new_field(mt, name, validator)
 	if type(name) ~= "string" or #name == 0 then
 		error("invalid field name.", 3)
-	elseif mt.__fields[name] then
-		error("duplicated field name.", 3)
+	elseif mt.__properties[name] or mt.__fields[name] then
+		error("duplicated property/field name.", 3)
 	elseif type(validator) ~= "function" then
 		error("no validator given.", 2)
 	else
@@ -33,19 +46,22 @@ function set_field(t, name, value)
 		local v = f.validator(f, value)
 		rawset(t, name, v)
 	else
-		error("object doesn't include such field", 2)
+		error(string.format("object doesn't allow '%s'", name), 2)
 	end
 end
 
 function get_field(t, name)
 	local mt = getmetatable(t)
-	local f = mt.__fields[name]
-	if f then
-		local v = f.validator(f, value)
+
+	if mt.__properties[name] then
+		return mt.__properties[name](t)
+	elseif mt.__fields[name] then
+		local v = mt.__fields[name].validator(f, value)
 		rawset(t, name, v)
 		return v
 	else
-		error("object doesn't include such field", 2)
+		-- don't break the world intentionally
+		return nil
 	end
 end
 
