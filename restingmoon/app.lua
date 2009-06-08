@@ -31,6 +31,11 @@ local function run(app, wsapi_env)
 	local req = restingmoon.request.new(app, wsapi_env)
 	local status, header, body
 
+	-- enforce canonical
+	if req.path_ext == nil and req.path_info:sub(-1,-1) ~= "/" then
+		status, header, body = h.send_301(req.path_info .. "/")
+	end
+
 	if req.document_root ~= "" then
 		local filename, attr
 
@@ -46,10 +51,6 @@ local function run(app, wsapi_env)
 			status, header, body = restingmoon.static.wsapi_dispatch_file(req, filename, attr)
 		elseif attr.mode == "directory" then
 			-- TODO: find possible ${path}.* and ${path}/index.*
-			if req.path_info:sub(-1,-1) ~= "/" then
-				-- use canonical
-				status, header, body = h.send_301(req.path_info .. "/")
-			end
 		else
 			io.stderr(table.show(attr, filename))
 		end
