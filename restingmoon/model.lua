@@ -1,5 +1,5 @@
 local error, print = error, print
-local type, math = type, math
+local type, math, string = type, math, string
 local getmetatable, rawset = getmetatable, rawset
 local tonumber, tostring = tonumber, tostring
 
@@ -98,7 +98,7 @@ local function validate_integer(f, v)
 	return v
 end
 
-local boolean_strings = {
+local boolean_string = {
 	Y=true, y=true, ["1"]=true,
 	on=true, On=true, ON=true,
 	N=false, N=false, ["0"]=true,
