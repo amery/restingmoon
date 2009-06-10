@@ -71,9 +71,10 @@ end
 
 -- new resources tree, and / handler
 --
-function tree(handler)
+function tree(handler, handler404)
 	local root = {
 		["handler"] = handler,
+		["handler404"] = handler404,
 		["children"] = {},
 
 		["literal"] = literal,
