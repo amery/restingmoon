@@ -1,7 +1,9 @@
 module(..., package.seeall)
 
 local function newindex(t, key_field, key, value)
-	if type(value) ~= "table" then
+	if type(key) ~= "number" then
+		rawset(t, key, value)
+	elseif type(value) ~= "table" then
 		error("indexed ts only accept tables as elements", 2)
 	elseif t[key_field] then
 		error(string.format("slot %d already in use", key), 2)
