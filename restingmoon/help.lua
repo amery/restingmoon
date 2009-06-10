@@ -123,3 +123,16 @@ function table.deepcopy(object)
 	end
 	return _copy(object)
 end
+
+function table.copy(object)
+	if type(object) ~= "table" then
+		return object
+	end
+
+	local new_table = {}
+	for index, value in pairs(object) do
+		new_table[index] = value
+	end
+
+	return setmetatable(new_table, getmetatable(object))
+end
