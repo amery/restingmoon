@@ -1,9 +1,6 @@
-local error, print = error, print
-local type, math, string = type, math, string
-local getmetatable, rawset = getmetatable, rawset
-local tonumber, tostring = tonumber, tostring
+module(..., package.seeall)
 
-module(...)
+require "restingmoon.model.table"
 
 function new_model()
 	return {
