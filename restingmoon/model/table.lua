@@ -63,6 +63,25 @@ local function before(t, i)
 	end
 end
 
+local function html_option(t, current, max)
+	local function nop() end
+	local function yes()
+		coroutine.yield({})
+	end
+
+	return function()
+		local i = 1
+		while i <= max do
+			if i == current then
+				coroutine.yield({id=i, current=yes})
+			elseif t[i] == nil then
+				coroutine.yield({id=i, current=nop})
+			end
+			i = i + 1
+		end
+	end
+end
+
 function new(key_field, constructor)
 	local _newindex = function(t, key, value)
 		return newindex(t, key_field, key, value)
@@ -76,6 +95,7 @@ function new(key_field, constructor)
 		new=_newelement,
 		after=after,
 		before=before,
+		html_option=html_option,
 	}
 
 	local mt = {
