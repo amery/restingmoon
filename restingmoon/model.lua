@@ -28,19 +28,6 @@ function add_property(mt, name, callback)
 	end
 end
 
-local function new_field(mt, name, validator)
-	if type(name) ~= "string" or #name == 0 then
-		error("invalid field name.", 3)
-	elseif mt.__properties[name] or mt.__fields[name] then
-		error("duplicated property/field name.", 3)
-	elseif type(validator) ~= "function" then
-		error("no validator given.", 2)
-	else
-		mt.__fields[name] = {validator=validator}
-	end
-	return mt.__fields[name]
-end
-
 function set_field(t, name, value)
 	local mt = getmetatable(t)
 	local f = mt.__fields[name]
@@ -67,35 +54,22 @@ function get_field(t, name)
 	end
 end
 
-function add_integer_field(mt, name, default, min, max)
-	local f = new_field(mt, name, integer.validate)
-
-	f.default = default
-	f.min = min
-	f.max = max
+function add_integer_field(mt, ...)
+	integer.new(mt, ...)
 end
 
-function add_decimal_field(mt, name, default, min, max)
-	local f = new_field(mt, name, decimal.validate)
-
-	f.default = default
-	f.min = min
-	f.max = max
+function add_decimal_field(mt, ...)
+	decimal.new(mt, ...)
 end
 
-function add_text_field(mt, name)
-	new_field(mt, name, text.validate)
+function add_text_field(mt, ...)
+	text.new(mt, ...)
 end
 
-function add_boolean_field(mt, name, default)
-	local f = new_field(mt, name, boolean.validate)
-
-	f.default = default
+function add_boolean_field(mt, ...)
+	boolean.new(mt, ...)
 end
 
-function add_enum_field(mt, name, ref_enum, default)
-	local f = new_field(mt, name, enum.validate)
-
-	f.default = default
-	f.enum = ref_enum
+function add_enum_field(mt, ...)
+	enum.new(mt, ...)
 end

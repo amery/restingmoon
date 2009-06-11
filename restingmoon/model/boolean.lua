@@ -1,5 +1,7 @@
 module(..., package.seeall)
 
+local common=require("restingmoon.model.common")
+
 local boolean_string = {
 	Y=true, y=true, ["1"]=true,
 	on=true, On=true, ON=true,
@@ -25,3 +27,8 @@ function validate(f, v)
 	end
 end
 
+function new(mt, name, default)
+	local f = common.new_field(mt, name, validate)
+
+	f.default = default
+end

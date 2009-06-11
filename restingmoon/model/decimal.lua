@@ -1,5 +1,7 @@
 module(..., package.seeall)
 
+local common=require("restingmoon.model.common")
+
 function validate(f, v)
 	if type(v) == "string" then
 		v = tonumber(v)
@@ -19,3 +21,10 @@ function validate(f, v)
 	return f.default
 end
 
+function new(mt, name, default, min, max)
+	local f = common.new_field(mt, name, validate)
+
+	f.default = default
+	f.min = min
+	f.max = max
+end
