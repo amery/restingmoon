@@ -7,11 +7,10 @@ require "restingmoon.model.enum"
 require "restingmoon.model.boolean"
 require "restingmoon.model.text"
 
-
 -- metatable of the models
 local metatable = { __index = {} }
 
-function new_model()
+function new()
 	local model = {
 		__properties={},
 		__fields={},
@@ -34,7 +33,7 @@ function metatable.__index.add_property(mt, name, callback)
 end
 
 function metatable.__index.add_field(mt, type, ...)
-	type.new(mt, ...)
+	return type.new(mt, ...)
 end
 
 function set_field(t, name, value)

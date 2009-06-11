@@ -22,9 +22,11 @@ function validate(f, v)
 end
 
 function new(mt, name, default, min, max)
-	local f = common.new_field(mt, name, validate)
+	local f = common.new(mt, name, validate)
 
 	f.default = default
 	f.min = min
 	f.max = max
+
+	return f
 end

@@ -28,7 +28,9 @@ function validate(f, v)
 end
 
 function new(mt, name, default)
-	local f = common.new_field(mt, name, validate)
+	local f = common.new(mt, name, validate)
 
 	f.default = default
+
+	return f
 end

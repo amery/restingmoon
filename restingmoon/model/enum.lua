@@ -11,8 +11,10 @@ function validate(f, v)
 end
 
 function new(mt, name, enum, default)
-	local f = common.new_field(mt, name, validate)
+	local f = common.new(mt, name, validate)
 
 	f.default = default
 	f.enum = enum
+
+	return f
 end

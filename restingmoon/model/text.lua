@@ -11,5 +11,5 @@ function validate(f, v)
 end
 
 function new(mt, name)
-	common.new_field(mt, name, validate)
+	return common.new(mt, name, validate)
 end
