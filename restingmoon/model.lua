@@ -1,22 +1,27 @@
 module(..., package.seeall)
 
 require "restingmoon.model.table"
-local decimal=require("restingmoon.model.decimal")
-local integer=require("restingmoon.model.integer")
-local enum=require("restingmoon.model.enum")
-local boolean=require("restingmoon.model.boolean")
-local text=require("restingmoon.model.text")
+require "restingmoon.model.decimal"
+require "restingmoon.model.integer"
+require "restingmoon.model.enum"
+require "restingmoon.model.boolean"
+require "restingmoon.model.text"
+
+
+-- metatable of the models
+local metatable = { __index = {} }
 
 function new_model()
-	return {
+	local model = {
 		__properties={},
 		__fields={},
 		__index=get_field,
 		__newindex=set_field,
 	}
+	return setmetatable(model, metatable)
 end
 
-function add_property(mt, name, callback)
+function metatable.__index.add_property(mt, name, callback)
 	if type(name) ~= "string" or #name == 0 then
 		error("invalid property name.", 3)
 	elseif mt.__properties[name] or mt.__fields[name] then
@@ -26,6 +31,10 @@ function add_property(mt, name, callback)
 	else
 		mt.__properties[name] = callback
 	end
+end
+
+function metatable.__index.add_field(mt, type, ...)
+	type.new(mt, ...)
 end
 
 function set_field(t, name, value)
@@ -52,24 +61,4 @@ function get_field(t, name)
 		-- don't break the world intentionally
 		return nil
 	end
-end
-
-function add_integer_field(mt, ...)
-	integer.new(mt, ...)
-end
-
-function add_decimal_field(mt, ...)
-	decimal.new(mt, ...)
-end
-
-function add_text_field(mt, ...)
-	text.new(mt, ...)
-end
-
-function add_boolean_field(mt, ...)
-	boolean.new(mt, ...)
-end
-
-function add_enum_field(mt, ...)
-	enum.new(mt, ...)
 end
