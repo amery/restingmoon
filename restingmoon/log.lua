@@ -10,6 +10,14 @@ local function resource(req)
 	end
 end
 
+local function method(req)
+	if req.method ~= req.wsapi_env.REQUEST_METHOD then
+		return req.method .. "(" .. req.wsapi_env.REQUEST_METHOD .. ")"
+	else
+		return req.method
+	end
+end
+
 function restingmoon.log_response(req, status, length)
 	-- trying to mimic Apache common format
 	-- http://httpd.apache.org/docs/1.3/logs.html#common
@@ -18,8 +26,8 @@ function restingmoon.log_response(req, status, length)
 	print(string.format(fmt,
 		req.wsapi_env.REMOTE_ADDR,
 		os.date("[%F %T %z]"),
-		req.wsapi_env.REQUEST_METHOD,
 		resource(req),
+		method(req),
 		req.wsapi_env.SERVER_PROTOCOL,
 		status ~= nil and status or "-",
 		length ~= nil and length or "-"
