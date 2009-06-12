@@ -29,5 +29,23 @@ function new(app, wsapi_env)
 	req.app_root = wsapi_env.APP_PATH
 	req.app = app
 
+	if req.method == "GET" then
+		req.GET = req.wsapi_req.GET
+	elseif req.method == "POST" then
+		-- HACK HACK HACK HACK
+		-- <form /> doesn't support PUT or DELETE yet, so hackish. a "delete" button will turn this
+		-- into a DELETE and a "put" button will turn this into a "PUT" (update)
+
+		if req.wsapi_req.POST["delete"] ~= nil then
+			req.method = "DELETE"
+		elseif req.wsapi_req.POST["put"] ~= nil then
+			req.method = "PUT"
+			req.POST = req.wsapi_req.POST
+			req.POST["put"] = nil
+		else
+			req.POST = req.wsapi_req.POST
+		end
+	end
+
 	return req
 end
