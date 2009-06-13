@@ -49,6 +49,18 @@ local function before(t, id)
 	end
 end
 
+local function iterator(t, maxn)
+	maxn = maxn or table.maxn(t)
+	if maxn > 0 then
+		local f = function (_, last)
+			return after(t, last, maxn)
+		end
+		return f, nil, 0
+	else
+		return function() end
+	end
+end
+
 local function html_option(t, current, max)
 	local function nop() end
 	local function yes()
@@ -81,6 +93,7 @@ function new(key_field, constructor)
 		new=_newelement,
 		after=after,
 		before=before,
+		iterator=iterator,
 		html_option=html_option,
 	}
 
