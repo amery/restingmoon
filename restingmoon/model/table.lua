@@ -21,45 +21,31 @@ local function newelement(t, constructor, key, ...)
 	return t[key]
 end
 
-local function after(t, i)
-	local j = i + 1
-	if j < 1 then
-		return 0
-	elseif t[j] ~= nil then
-		return j
-	else
-		-- outch
-		local chosen
-		for k, _ in ipairs(t) do
-			if k > i then
-				if chosen then
-					if k < chosen then
-						chosen = k
-					end
-				else
-					chosen = k
-				end
-			end
+local function after(t, id, maxn)
+	local e
+	maxn = maxn or table.maxn(t)
+	id = id or 0
+
+	while id < maxn do
+		id = id + 1
+		e = t[id]
+
+		if e ~= nil then
+			return id, e
 		end
-		return chosen or 0
 	end
 end
 
-local function before(t, i)
-	local j = i - 1
-	if j < 1 then
-		return 0
-	elseif t[j] ~= nil then
-		return j
-	else
-		-- outch, expensive search
-		local chosen = 0
-		for k, _ in ipairs(t) do
-			if k > chosen and k < i then
-				chosen = k
-			end
+local function before(t, id)
+	local e
+	id = id or 0
+
+	while id > 1 do
+		id = id - 1
+		e = t[id]
+		if e ~= nil then
+			return id, e
 		end
-		return chosen
 	end
 end
 
