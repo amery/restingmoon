@@ -12,7 +12,7 @@ local metatable = { __index = {} }
 
 function new()
 	local model = {
-		__properties={},
+		P={},
 		F={},
 		__index=get_field,
 		__newindex=set_field,
@@ -23,12 +23,12 @@ end
 function metatable.__index.add_property(mt, name, callback)
 	if type(name) ~= "string" or #name == 0 then
 		error("invalid property name.", 3)
-	elseif mt.__properties[name] or mt.F[name] then
+	elseif mt.P[name] or mt.F[name] then
 		error("duplicated property/field name.", 3)
 	elseif type(callback) ~= "function" then
 		error("invalid callback", 2)
 	else
-		mt.__properties[name] = callback
+		mt.P[name] = callback
 	end
 end
 
@@ -52,8 +52,8 @@ function get_field(t, name)
 
 	if mt[name] then
 		return mt[name]
-	elseif mt.__properties[name] then
-		return mt.__properties[name](t)
+	elseif mt.P[name] then
+		return mt.P[name](t)
 	elseif mt.F[name] then
 		local v = mt.F[name].validator(f, value)
 		rawset(t, name, v)
