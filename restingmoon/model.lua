@@ -14,6 +14,7 @@ function new()
 	local model = {
 		P={},
 		F={},
+		T={},
 		__index=get_field,
 		__newindex=set_field,
 	}
@@ -32,8 +33,12 @@ function metatable.__index.add_property(mt, name, callback)
 	end
 end
 
-function metatable.__index.add_field(mt, type, ...)
-	return type.new(mt, ...)
+function metatable.__index.add_field(mt, type, name, ...)
+	local f = type.new(mt, name, ...)
+	if f then
+		mt.T[name] = type
+		return f
+	end
 end
 
 function set_field(t, name, value)
