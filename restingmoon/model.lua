@@ -50,7 +50,9 @@ end
 function get_field(t, name)
 	local mt = getmetatable(t)
 
-	if mt.__properties[name] then
+	if mt[name] then
+		return mt[name]
+	elseif mt.__properties[name] then
 		return mt.__properties[name](t)
 	elseif mt.__fields[name] then
 		local v = mt.__fields[name].validator(f, value)
