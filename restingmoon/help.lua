@@ -136,3 +136,24 @@ function table.copy(object)
 
 	return setmetatable(new_table, getmetatable(object))
 end
+
+-- Range iterator
+-- taken from http://lua-users.org/wiki/RangeIterator
+--
+function range(from, to, step)
+	step = step or 1
+	local f =
+		step > 0 and
+			function(_, lastvalue)
+				local nextvalue = lastvalue + step
+				if nextvalue <= to then return nextvalue end
+			end or
+		step < 0 and
+			function(_, lastvalue)
+				local nextvalue = lastvalue + step
+				if nextvalue >= to then return nextvalue end
+			end or
+		function(_, lastvalue) return lastvalue end
+	return f, nil, from - step
+end
+
