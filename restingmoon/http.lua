@@ -26,6 +26,15 @@ function send_301(location)
 	return 301, headers, nil
 end
 
+function send_302(location)
+	local headers = {
+		["Location"] = location,
+		["Content-Length"] = 0,
+	}
+
+	return 302, headers, nil
+end
+
 function send_304(headers)
 	return 304, headers, nil
 end
