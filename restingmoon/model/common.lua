@@ -8,7 +8,7 @@ function new(mt, name, validator)
 	elseif type(validator) ~= "function" then
 		error("no validator given.", 2)
 	else
-		mt.F[name] = {validator=validator}
+		mt.F[name] = {validator=validator, name=name}
 	end
 	return mt.F[name]
 end
