@@ -16,6 +16,11 @@ function html_option(f, current)
 		coroutine.yield({})
 	end
 
+	if type(current) == "table" then
+		-- it's the object
+		current = current[f.name]
+	end
+
 	return function()
 		for k, v in pairs(f.enum) do
 			coroutine.yield{
