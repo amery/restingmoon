@@ -68,14 +68,12 @@ local function html_option(t, current, max)
 	end
 
 	return function()
-		local i = 1
-		while i <= max do
+		for i = 1, max do
 			if i == current then
 				coroutine.yield({id=i, current=yes})
-			elseif t[i] == nil then
+			elseif t[i] == nil then -- free slots
 				coroutine.yield({id=i, current=nop})
 			end
-			i = i + 1
 		end
 	end
 end
