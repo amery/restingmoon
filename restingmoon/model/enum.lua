@@ -10,11 +10,29 @@ function validate(f, v)
 	end
 end
 
+function html_option(f, current)
+	local function nop() end
+	local function yes()
+		coroutine.yield({})
+	end
+
+	return function()
+		for k, v in pairs(f.enum) do
+			coroutine.yield{
+				id=k,
+				name=v,
+				current= (k == current) and yes or nop,
+			}
+		end
+	end
+end
+
 function new(mt, name, enum, default)
 	local f = common.new(mt, name, validate)
 
 	f.default = default
 	f.enum = enum
+	f.html_option = html_option
 
 	return f
 end
