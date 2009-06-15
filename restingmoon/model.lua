@@ -45,26 +45,29 @@ function set_field(t, name, value)
 	local mt = getmetatable(t)
 	local f = mt.F[name]
 	if f then
-		local v = f.validator(f, value)
-		rawset(t, name, v)
+		local ok, v = f.validator(f, value)
+		if ok then
+			rawset(t, name, v)
+		elseif value == nil and f.default ~= nil then
+			rawset(t, name, f.default)
+		else
+			error(string.format("invalid value (%q) for %s", tostring(value), name), 2)
+		end
 	else
 		error(string.format("object doesn't allow '%s'", name), 2)
 	end
 end
 
 function get_field(t, name)
-	local mt = getmetatable(t)
+	local mt, v = getmetatable(t), rawget(t, name)
 
-	if mt[name] then
-		return mt[name]
+	if v ~= nil then
+		return v
 	elseif mt.P[name] then
 		return mt.P[name](t)
-	elseif mt.F[name] then
-		local v = mt.F[name].validator(f, value)
-		rawset(t, name, v)
-		return v
+	elseif mt[name] then
+		return mt[name]
 	else
-		-- don't break the world intentionally
-		return nil
+		return
 	end
 end
