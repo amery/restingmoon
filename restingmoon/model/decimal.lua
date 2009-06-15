@@ -15,10 +15,10 @@ function validate(f, v)
 		-- NOP
 	else
 		-- valid number
-		return v
+		return true, v
 	end
 
-	return f.default
+	return false
 end
 
 function new(mt, name, default, min, max)
