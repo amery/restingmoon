@@ -51,7 +51,7 @@ function set_field(t, name, value)
 		elseif value == nil and f.default ~= nil then
 			rawset(t, name, f.default)
 		else
-			error(string.format("invalid value (%q) for %s", tostring(value), name), 2)
+			error(string.format("invalid value (%q) for %s.", tostring(value), name), 2)
 		end
 	else
 		error(string.format("object doesn't allow '%s'", name), 2)
