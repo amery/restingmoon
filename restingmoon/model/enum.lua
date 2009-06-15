@@ -4,9 +4,9 @@ local common=require("restingmoon.model.common")
 
 function validate(f, v)
 	if type(v) ~= "string" or f.enum[v] == nil then
-		return f.default
+		return false
 	else
-		return v
+		return true, v
 	end
 end
 
