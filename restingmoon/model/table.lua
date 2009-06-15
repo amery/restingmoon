@@ -3,6 +3,8 @@ module(..., package.seeall)
 local function newindex(t, key_field, key, value)
 	if type(key) ~= "number" then
 		rawset(t, key, value)
+	elseif value == nil then
+		rawset(t, key, nil)
 	elseif type(value) ~= "table" then
 		error("indexed ts only accept tables as elements", 2)
 	elseif t[key_field] then
@@ -78,6 +80,53 @@ local function html_option(t, current, max)
 	end
 end
 
+local function update_http_post(list, id, o, post)
+	local ok, all_ok, log = true, true, {}
+	local key_field = list.key_field
+
+	-- id
+	local old, new = o[key_field], post[key_field]
+	if new then
+		if o.F[key_field].http_validator then
+			ok, new = o.F[key_field]:http_validator(new)
+		else
+			ok, new = o.F[key_field]:validator(new)
+		end
+
+		if not ok then
+			log[key_field] = "Invalid value"
+			return false, log
+		elseif old ~= new then
+			-- relocate element
+			if list[new] then
+				log[key_field] = "Already in use"
+				return false, log
+			else
+				o[key_field] = new
+				list[new], list[old] = o, nil
+			end
+		end
+	end
+
+	for name, old in pairs(o) do
+		new = post[name]
+
+		if o.F[name].http_validator then
+			ok, new = o.F[name]:http_validator(new)
+		else
+			ok, new = o.F[name]:validator(new)
+		end
+
+		if not ok then
+			log[name] = "Invalid value"
+		else
+			o[name] = new
+		end
+	end
+
+	return true, log
+end
+
 function new(key_field, constructor)
 	local _newindex = function(t, key, value)
 		return newindex(t, key_field, key, value)
@@ -89,10 +138,12 @@ function new(key_field, constructor)
 
 	local _index = {
 		new=_newelement,
+		key_field=key_field,
 		after=after,
 		before=before,
 		iterator=iterator,
 		html_option=html_option,
+		update_http_post=update_http_post,
 	}
 
 	local mt = {
