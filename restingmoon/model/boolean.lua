@@ -21,9 +21,9 @@ function validate(f, v)
 	end
 
 	if type(v) ~= "boolean" then
-		return f.default
+		return false
 	else
-		return v
+		return true, v
 	end
 end
 
