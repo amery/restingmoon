@@ -9,12 +9,10 @@ function validate(f, v)
 	end
 
 	if type(v) ~= "number" or math.floor(v) ~= v then
-		v = f.default
+		return false
 	else
-		v = decimal.validate(f, v)
+		return decimal.validate(f, v)
 	end
-
-	return v
 end
 
 function new(mt, name, default, min, max)
