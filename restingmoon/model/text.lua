@@ -4,9 +4,13 @@ local common=require("restingmoon.model.common")
 
 function validate(f, v)
 	if type(v) ~= "string" then
-		return tostring(v)
+		v = tostring(v)
+	end
+
+	if type(v) == "string" then
+		return true, v
 	else
-		return v
+		return false
 	end
 end
 
