@@ -27,10 +27,21 @@ function validate(f, v)
 	end
 end
 
+function http_validator(f, v)
+	if v == nil then
+		return true, false
+	elseif v == "on" then
+		return true, true
+	else
+		return false
+	end
+end
+
 function new(mt, name, default)
 	local f = common.new(mt, name, validate)
 
 	f.default = default
+	f.http_validator = http_validator
 
 	return f
 end
