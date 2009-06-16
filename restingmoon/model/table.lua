@@ -72,8 +72,6 @@ local function html_option(t, current, max, filter)
 	if filter == nil then
 		-- default filter, free slots
 		filter = function (id, o)
-			print(id, o, o == nil)
-
 			return (o == nil)
 		end
 	end
