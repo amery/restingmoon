@@ -63,17 +63,26 @@ local function iterator(t, maxn)
 	end
 end
 
-local function html_option(t, current, max)
+local function html_option(t, current, max, filter)
 	local function nop() end
 	local function yes()
 		coroutine.yield({})
+	end
+
+	if filter == nil then
+		-- default filter, free slots
+		filter = function (id, o)
+			print(id, o, o == nil)
+
+			return (o == nil)
+		end
 	end
 
 	return function()
 		for i = 1, max do
 			if i == current then
 				coroutine.yield({id=i, current=yes})
-			elseif t[i] == nil then -- free slots
+			elseif filter(i, t[i]) then
 				coroutine.yield({id=i, current=nop})
 			end
 		end
