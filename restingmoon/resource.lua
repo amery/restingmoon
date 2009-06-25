@@ -39,36 +39,37 @@ function index.finish(tree)
 	end
 end
 
--- new literal node, always exactly the same value
---
-function index.literal(tree, name, handler, handler404)
+function new_node(tree, name)
 	local node = {
-		["name"] = name,
-		["type"] = "literal",
-		["handler"] = handler,
-		["handler404"] = handler404,
-		["children"] = {},
-		["parent"] = tree.current,
+		name = name,
+		children = {},
+		parent = tree.current,
 	}
 
 	node.parent.children[#node.parent.children + 1] = node
 	tree.current = node
+
+	return node
+end
+
+-- new literal node, always exactly the same value
+--
+function index.literal(tree, name, handler, handler404)
+	local node = new_node(tree, name)
+
+	node.type = "literal"
+	node.handler = handler
+	node.handler404 = handler404
 end
 
 -- new numeric variable node
 --
 function index.numeric(tree, name, handler, handler404)
-	local node = {
-		["name"] = name,
-		["type"] = "numeric",
-		["handler"] = handler,
-		["handler404"] = handler404,
-		["children"] = {},
-		["parent"] = tree.current,
-	}
+	local node = new_node(tree, name)
 
-	node.parent.children[#node.parent.children + 1] = node
-	tree.current = node
+	node.type = "numeric"
+	node.handler = handler
+	node.handler404 = handler404
 end
 
 local tree_mt = { __index = index }
@@ -83,7 +84,6 @@ function tree(handler, handler404)
 	}
 
 	root["current"] = root
-
 	return setmetatable(root, tree_mt)
 end
 
