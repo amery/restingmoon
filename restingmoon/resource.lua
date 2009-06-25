@@ -1,8 +1,10 @@
 module(..., package.seeall)
 
+local index = {}
+
 -- return one or more levels in the tree
 --
-local function back(tree, steps)
+function index.back(tree, steps)
 	if steps == nil then
 		steps = 1
 	end
@@ -26,7 +28,7 @@ end
 
 -- remove all the helpers from the tree
 --
-local function finish(tree)
+function index.finish(tree)
 	local v
 	tree.current = nil
 	tree.finish, tree.back = nil, nil
@@ -39,7 +41,7 @@ end
 
 -- new literal node, always exactly the same value
 --
-local function literal(tree, name, handler, handler404)
+function index.literal(tree, name, handler, handler404)
 	local node = {
 		["name"] = name,
 		["type"] = "literal",
@@ -55,7 +57,7 @@ end
 
 -- new numeric variable node
 --
-local function numeric(tree, name, handler, handler404)
+function index.numeric(tree, name, handler, handler404)
 	local node = {
 		["name"] = name,
 		["type"] = "numeric",
@@ -69,6 +71,8 @@ local function numeric(tree, name, handler, handler404)
 	tree.current = node
 end
 
+local tree_mt = { __index = index }
+
 -- new resources tree, and / handler
 --
 function tree(handler, handler404)
@@ -76,15 +80,11 @@ function tree(handler, handler404)
 		["handler"] = handler,
 		["handler404"] = handler404,
 		["children"] = {},
-
-		["literal"] = literal,
-		["numeric"] = numeric,
-		["back"] = back,
-		["finish"] = finish,
 	}
 
 	root["current"] = root
-	return root
+
+	return setmetatable(root, tree_mt)
 end
 
 function find_handler(resources, req)
