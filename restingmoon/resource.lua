@@ -44,6 +44,7 @@ function new_node(tree, name)
 		name = name,
 		children = {},
 		parent = tree.current,
+		args = {},
 	}
 
 	node.parent.children[#node.parent.children + 1] = node
@@ -70,6 +71,12 @@ function index.numeric(tree, name, handler, handler404)
 	node.type = "numeric"
 	node.handler = handler
 	node.handler404 = handler404
+end
+
+-- add custom arguments to a node
+--
+function index.setarg(tree, name, value)
+	tree.current.args[name] = value
 end
 
 local tree_mt = { __index = index }
