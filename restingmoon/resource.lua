@@ -113,11 +113,17 @@ function find_handler(resources, req)
 			for j, v in ipairs(p.children) do
 				if v.type == "literal" and v.name == t then
 					p, found = v, true
+					for ak, av in pairs(v.args) do
+						args[ak] = av
+					end
 					break
 				elseif v.type == "numeric" then
 					local n = tonumber(t)
 					if n then
 						p, found = v, true
+						for ak, av in pairs(v.args) do
+							args[ak] = av
+						end
 						args[v.name] = n
 						break
 					end
