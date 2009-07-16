@@ -10,19 +10,14 @@ function validate(f, v)
 	end
 end
 
-function html_option(f, current)
+function raw_html_option(enum, current)
 	local function nop() end
 	local function yes()
 		coroutine.yield({})
 	end
 
-	if type(current) == "table" then
-		-- it's the object
-		current = current[f.name]
-	end
-
 	return function()
-		for k, v in pairs(f.enum) do
+		for k, v in pairs(enum) do
 			coroutine.yield{
 				id=k,
 				name=v,
@@ -30,6 +25,15 @@ function html_option(f, current)
 			}
 		end
 	end
+end
+
+function html_option(f, current)
+	if type(current) == "table" then
+		-- it's the object
+		current = current[f.name]
+	end
+
+	return raw_html_option(f.enum, current)
 end
 
 function new(mt, name, enum, default)
