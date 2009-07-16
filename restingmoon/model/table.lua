@@ -51,6 +51,15 @@ local function before(t, id)
 	end
 end
 
+local function isfull(t, maxn)
+	for i = 1, maxn do
+		if t[i] == nil then
+			return false
+		end
+	end
+	return true
+end
+
 local function iterator(t, maxn)
 	maxn = maxn or table.maxn(t)
 	if maxn > 0 then
@@ -149,6 +158,7 @@ function new(key_field, constructor)
 		after=after,
 		before=before,
 		iterator=iterator,
+		isfull=isfull,
 		html_option=html_option,
 		update_http_post=update_http_post,
 	}
