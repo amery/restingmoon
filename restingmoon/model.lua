@@ -21,22 +21,22 @@ function new()
 	return setmetatable(model, metatable)
 end
 
-function metatable.__index.add_property(mt, name, callback)
+function metatable.__index.add_property(model, name, callback)
 	if type(name) ~= "string" or #name == 0 then
 		error("invalid property name.", 3)
-	elseif mt.P[name] or mt.F[name] then
+	elseif model.P[name] or model.F[name] then
 		error("duplicated property/field name.", 3)
 	elseif type(callback) ~= "function" then
 		error("invalid callback", 2)
 	else
-		mt.P[name] = callback
+		model.P[name] = callback
 	end
 end
 
-function metatable.__index.add_field(mt, type, name, ...)
-	local f = type.new(mt, name, ...)
+function metatable.__index.add_field(model, type, name, ...)
+	local f = type.new(model, name, ...)
 	if f then
-		mt.T[name] = type
+		model.T[name] = type
 		return f
 	end
 end
@@ -52,8 +52,8 @@ function metatable.__index.init(model, o)
 end
 
 function set_field(t, name, value)
-	local mt = getmetatable(t)
-	local f = mt.F[name]
+	local model = getmetatable(t)
+	local f = model.F[name]
 	if f then
 		local ok, v = f.validator(f, value)
 		if ok then
@@ -69,14 +69,14 @@ function set_field(t, name, value)
 end
 
 function get_field(t, name)
-	local mt, v = getmetatable(t), rawget(t, name)
+	local model, v = getmetatable(t), rawget(t, name)
 
 	if v ~= nil then
 		return v
-	elseif mt.P[name] then
-		return mt.P[name](t)
-	elseif mt[name] then
-		return mt[name]
+	elseif model.P[name] then
+		return model.P[name](t)
+	elseif model[name] then
+		return model[name]
 	else
 		return
 	end
