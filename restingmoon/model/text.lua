@@ -14,6 +14,10 @@ function validate(f, v)
 	end
 end
 
-function new(mt, name)
-	return common.new(mt, name, validate)
+function new(mt, name, default)
+	local f = common.new(mt, name, validate)
+
+	f.default = default or ""
+
+	return f
 end
