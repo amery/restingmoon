@@ -41,6 +41,16 @@ function metatable.__index.add_field(mt, type, name, ...)
 	end
 end
 
+function metatable.__index.init(model, o)
+	for k, f in pairs(model.F) do
+		if o[k] == nil and f.default ~= nil then
+			o[k] = f.default
+		end
+	end
+
+	return setmetatable(o, model)
+end
+
 function set_field(t, name, value)
 	local mt = getmetatable(t)
 	local f = mt.F[name]
