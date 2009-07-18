@@ -5,7 +5,7 @@ local common=require("restingmoon.model.common")
 local boolean_string = {
 	Y=true, y=true, ["1"]=true,
 	on=true, On=true, ON=true,
-	N=false, N=false, ["0"]=true,
+	N=false, n=false, ["0"]=false,
 	off=false, Off=false, OFF=false,
 }
 
