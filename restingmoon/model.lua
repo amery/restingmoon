@@ -41,10 +41,24 @@ function metatable.__index.add_field(model, type, name, ...)
 	end
 end
 
-function metatable.__index.init(model, o)
+local function rawset_field(o, k, value)
+	local t = rawget(o, "__fields")
+
+	return rawset(t, k, value)
+end
+
+local function rawget_field(o, k)
+	local t = rawget(o, "__fields")
+
+	return rawget(t, k)
+end
+
+function metatable.__index.init(model, t)
+	local o = { __fields = t }
+
 	for k, f in pairs(model.F) do
-		if o[k] == nil and f.default ~= nil then
-			o[k] = f.default
+		if rawget(t, k) == nil and f.default ~= nil then
+			rawset(t, k, f.default)
 		end
 	end
 
@@ -57,9 +71,9 @@ function set_field(t, name, value)
 	if f then
 		local ok, v = f.validator(f, value)
 		if ok then
-			rawset(t, name, v)
+			rawset_field(t, name, v)
 		elseif value == nil and f.default ~= nil then
-			rawset(t, name, f.default)
+			rawset_field(t, name, f.default)
 		else
 			error(string.format("invalid value (%q) for %s.", tostring(value), name), 2)
 		end
@@ -69,7 +83,7 @@ function set_field(t, name, value)
 end
 
 function get_field(t, name)
-	local model, v = getmetatable(t), rawget(t, name)
+	local model, v = getmetatable(t), rawget_field(t, name)
 
 	if v ~= nil then
 		return v
