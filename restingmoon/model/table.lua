@@ -124,7 +124,7 @@ local function update_http_post(list, id, o, post)
 		end
 	end
 
-	for name, old in pairs(o) do
+	for name, old in pairs(o.F) do
 		new = post[name]
 
 		if o.F[name].http_validator then
