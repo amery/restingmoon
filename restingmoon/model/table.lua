@@ -72,7 +72,7 @@ local function iterator(t, maxn)
 	end
 end
 
-local function html_option(t, current, max, filter)
+local function html_option(t, current, max, filter, extender)
 	local selected = {}
 
 	local function nop() end
@@ -84,6 +84,13 @@ local function html_option(t, current, max, filter)
 		-- default filter, free slots
 		filter = function (id, o)
 			return (o == nil)
+		end
+	end
+
+	if extender == nil then
+		extender = function (data, id, o)
+			-- do nothing
+			return data
 		end
 	end
 
@@ -106,7 +113,7 @@ local function html_option(t, current, max, filter)
 
 			if selected[i] or filter(i, t[i]) then
 				data.selected = data.current
-				coroutine.yield(data)
+				coroutine.yield(extender(data, i, t[i]))
 			end
 		end
 	end
