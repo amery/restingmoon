@@ -73,6 +73,8 @@ local function iterator(t, maxn)
 end
 
 local function html_option(t, current, max, filter)
+	local selected = {}
+
 	local function nop() end
 	local function yes()
 		coroutine.yield({})
@@ -85,12 +87,25 @@ local function html_option(t, current, max, filter)
 		end
 	end
 
+	if type(current) == "nil" then
+		-- NOP
+	elseif type(current) == "table" then
+		for _, v in pairs(current) do
+			selected[v] = true
+		end
+	else
+		selected[current] = true
+	end
+
 	return function()
 		for i = 1, max do
-			if i == current then
-				coroutine.yield({id=i, current=yes})
-			elseif filter(i, t[i]) then
-				coroutine.yield({id=i, current=nop})
+			local data = {
+				id = i,
+				current = selected[i] and yes or nop,
+			}
+
+			if selected[i] or filter(i, t[i]) then
+				coroutine.yield(data)
 			end
 		end
 	end
