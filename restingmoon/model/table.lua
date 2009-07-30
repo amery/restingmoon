@@ -113,7 +113,9 @@ local function html_option(t, current, max, filter, extender)
 
 			if selected[i] or filter(i, t[i]) then
 				data.selected = data.current
-				coroutine.yield(extender(data, i, t[i]))
+				if extender(data, i, t[i]) then
+					coroutine.yield(data)
+				end
 			end
 		end
 	end
