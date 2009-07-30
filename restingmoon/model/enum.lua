@@ -11,6 +11,8 @@ function validate(f, v)
 end
 
 function raw_html_option(enum, current, filter)
+	local selected = {}
+
 	local function nop() end
 	local function yes()
 		coroutine.yield({})
@@ -20,14 +22,25 @@ function raw_html_option(enum, current, filter)
 		filter = function() return true end
 	end
 
+	if type(current) == "nil" then
+		-- NOP
+	elseif type(current) == "table" then
+		for _, v in pairs(current) do
+			selected[v] = true
+		end
+	else
+		selected[current] = true
+	end
+
 	return function()
 		for k, v in pairs(enum) do
 			if filter(k) then
-				coroutine.yield{
-					id=k,
-					name=v,
-					current= (k == current) and yes or nop,
-				}
+				local data = { id=k, name=v }
+
+				data.current = selected[k] and yes or nop
+				data.selected = data.current
+
+				coroutine.yield(data)
 			end
 		end
 	end
