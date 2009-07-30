@@ -105,6 +105,7 @@ local function html_option(t, current, max, filter)
 			}
 
 			if selected[i] or filter(i, t[i]) then
+				data.selected = data.current
 				coroutine.yield(data)
 			end
 		end
