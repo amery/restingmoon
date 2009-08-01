@@ -21,6 +21,10 @@ function new()
 	return setmetatable(model, metatable)
 end
 
+function metatable.__index.add_method(model, name, f)
+	model[name] = f
+end
+
 function metatable.__index.add_property(model, name, callback)
 	if type(name) ~= "string" or #name == 0 then
 		error("invalid property name.", 3)
