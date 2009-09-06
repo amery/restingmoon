@@ -1,5 +1,3 @@
-require "restingmoon.log"
-
 require "restingmoon.request"
 
 require "restingmoon.static"
@@ -20,6 +18,8 @@ function hello_world(req)
 		coroutine.yield("<h1>Hello Wsapi!</h1>")
 		coroutine.yield("<pre>")
 		coroutine.yield(table.show(req, "req"))
+		coroutine.yield("</pre><pre>")
+		coroutine.yield(table.show(req.wsapi_env.headers, "req.wsapi_env.headers"))
 		coroutine.yield("</pre>")
 		coroutine.yield("</body></html>")
 	end
@@ -78,8 +78,6 @@ local function run(app, wsapi_env)
 
 		status, header, body = handler(req, args, accepts)
 	end
-
-	restingmoon.log_response(req, status, header and header["Content-Length"])
 
 	return status, header, body
 end
