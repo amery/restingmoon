@@ -119,3 +119,33 @@ function parse_media_ranges(s)
 
 	return cache_media_range[s]
 end
+
+function match_media_type(a, b)
+	if a.type == "*" or b.type == "*" or a.type == b.type then
+		if a.subtype == "*" or b.subtype == "*" or a.subtype == b.subtype then
+			return true
+		end
+	end
+end
+
+function choose_media_type(supported, accepted)
+	local chosen, q = 0, 0
+	for i, x in ipairs(supported) do
+		if type(x) == "string" then
+			x = parse_mime_type(x)
+		end
+		supported[i] = 0
+		for _, t in pairs(accepted) do
+			if match_media_type(x, t) then
+				if supported[i] < t.params.q then
+					supported[i] = t.params.q
+				end
+			end
+		end
+
+		if supported[i] > q then
+			chosen, q = i, supported[i]
+		end
+	end
+	return chosen
+end
