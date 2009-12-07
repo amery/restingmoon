@@ -49,6 +49,7 @@ function mime_by_filename(filename)
 	return mime_by_ext(filename:match("[^./]%.([^./]+)$"))
 end
 
+local cache_media_ranges = {}
 local cache_media_range = {}
 local cache_media_type = {
 	["*/*"] = { type="*", subtype="*" },
@@ -109,15 +110,15 @@ function parse_media_range(s)
 end
 
 function parse_media_ranges(s)
-	if not cache_media_range[s] then
+	if not cache_media_ranges[s] then
 		local t = {}
 		for v in string.gmatch(s, " *([^,]+) *") do
 			t[#t+1] = parse_media_range(v)
 		end
-		cache_media_range[s]=t
+		cache_media_ranges[s]=t
 	end
 
-	return cache_media_range[s]
+	return cache_media_ranges[s]
 end
 
 function match_media_type(a, b)
